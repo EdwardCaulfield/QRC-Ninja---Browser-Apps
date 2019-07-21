@@ -1,0 +1,32 @@
+{
+  "extensionName": {
+    "message": "QRC Ninja",
+    "description": "QRC Ninja - EN"
+  },
+
+  "extensionDescription": {
+    "message": "Decodes QR Codes from web pages",
+    "description": "Decodes QR Codes from web pages."
+  },
+
+  "guideMessage": {
+    "message": "Click on QR Code",
+    "description": "Instructions on what to do with the guide."
+  },
+
+  "CannotLocateQRCode": {
+    "message": "Unable to locate QR Code",
+    "description": "Title of the notification."
+  },
+
+  "CannotTranslateShortCode": {
+    "message": "Unable to translate Short Code",
+    "description": "Title of the notification."
+  },
+
+  "errorMessage": {
+    "message": "Please put the QR Code in the center of the screen, zoom a bit and try again",
+    "description": "Instructions on how to improve the situation."
+  }
+
+}
