@@ -673,7 +673,8 @@ function analyseImageSegment( context, top, left, width, height ){
   }
   catch {
 
-    abortOperation("analyseImageSegment-1", msg_Internal_Failure + code_06);
+    return qrCode;
+//    abortOperation("analyseImageSegment-1", msg_Internal_Failure + code_06);
 
   }
 
