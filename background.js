@@ -140,6 +140,7 @@ function initiateSearch() {
    return;
 
   } 
+
   // Paint the screen shot to a canvas
   try {
 
@@ -171,6 +172,7 @@ function initiateSearch() {
   // the QR Code, so we will get a region and test to see if it contains a readable QR Code.
   //
   let qrCodeFound = false;
+  let qrCode;
   fileMade = false;
   decodedQRCString = null;
   // console.log("The device Pixel Ratio is " + window.devicePixelRatio);
@@ -189,7 +191,7 @@ for (searchIteration = 0; (searchIteration < maxIterations) && !qrCodeFound; sea
   let topPosition = Math.max(0, clickInformation.top - (newHeight/ 2));
 
 //    save(screenShotCanvas.toDataURL(), "testfile.png");
-  let qrCode = analyseImageSegment( screenShotContext, topPosition, leftPosition, newWidth, newHeight );
+  qrCode = analyseImageSegment( screenShotContext, topPosition, leftPosition, newWidth, newHeight );
     
     qrCodeFound = !!qrCode && !!qrCode.data;
 
@@ -218,8 +220,8 @@ for (searchIteration = 0; (searchIteration < maxIterations) && !qrCodeFound; sea
   //
   if ( qrCodeFound ) {
 
-    searchForLinkFirebase(qrCode.data);
-//    searchForLink(qrCode.data);
+//    searchForLinkFirebase(qrCode.data);
+    searchForLink(qrCode.data);
 
   } 
   // else if ( ajaxResults ) {  // used when are using the Scandit library
@@ -337,6 +339,7 @@ function locationIsValid( location ){
          ( location.topRightCorner.y < location.bottomRightCorner.y)
    ;
 }
+
 function searchForLinkFirebase(keyString) {
 
   try {
@@ -438,16 +441,39 @@ function searchForLinkFirebase(keyString) {
 
 // }
 
-function searchForLink( keyString ) {
+async function searchForLink( keyString ) {
 
   try {
 
     decodedQRCString = keyString;
+    if ( isURL(decodedQRCString)) {
+      openNewTab(decodedQRCString);
+      return;
+    }
 
-    let xhr = new XMLHttpRequest();
-    xhr.open('POST', url_findKey, true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.onload = processSearchResponse;
+    let fullURL = url_findKey + "?key=" + decodedQRCString;
+    fetch(fullURL, {method: "GET"})
+    .then( result => result.json())
+    .then( function( data ) {
+      if (data[0].status === status_operationSuccessful) {
+        if (status_openNewTab === data[0].openNewTab) {
+          openNewTab(data[0].urlString);
+        } else {
+          redirectTab(data[0].urlString);
+        }
+      } else {
+        notifyFailure(msg_Could_Not_Translate_Part1of2 + decodedQRCString +
+          msg_Could_Not_Translate_Part2of2, key_LabelErrorMessage);
+      }
+    })
+    .catch( result => {
+      notifyFailure(msg_Unexpected_Error_While_Translating_Part1of2 + decodedQRCString + result +
+        msg_Unexpected_Error_While_Translating_Part2of2, key_LabelErrorMessage);
+    });
+//    let xhr = new XMLHttpRequest();
+//    xhr.open('GET', fullURL, true);
+//    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+//    xhr.onload = processSearchResponse;
     // xhr.onload = function () {
     //   if (xhr.status === 200) {
     //     getTargetLink(xhr.responseText);
@@ -472,7 +498,9 @@ function processSearchResponse() {
     if (this.status === 200) {
       getTargetLink(this.responseText);
     } else {
-      getTargetLink(_errorTranslatingCodeToURL);
+      notifyFailure(msg_Could_Not_Translate_Part1of2 + decodedQRCString +
+        msg_Could_Not_Translate_Part2of2, key_LabelErrorMessage);
+//      getTargetLink(_errorTranslatingCodeToURL);
     }
 
 }
@@ -655,8 +683,10 @@ function openNewTab( targetString ) {
 
   try {
 
-    let newURL = url_analyse + "?" + param_actionRequest + "=" + param_showPageCommand + "&" + param_targetPageIdentifier + "=" + targetString;
-    chrome.tabs.create({ url: newURL });
+//    let newURL = url_analyse + "?" + param_actionRequest + "=" + param_showPageCommand + "&" + param_targetPageIdentifier + "=" + targetString;
+//    chrome.tabs.create({ url: newURL });
+
+    chrome.tabs.create({ url: targetString });
 
   }
   catch {
