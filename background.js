@@ -42,7 +42,7 @@ const code_08 = "08"; // failure injecting CSS
 const code_09 = "09"; // failure injecting script
 const code_10 = "10"; // failure processing message listener
 const code_11 = "11"; // failure trying to redirect url
-const code_12 = "12"; // Firebase call failed
+//const code_12 = "12"; // Firebase call failed
 
 let clickInformation; // information about where the user clicked 
 let searchIteration;  // which iteration of the search are we in?
@@ -104,16 +104,16 @@ let screenShotImage;  // stores the result of the screen capture
 //
 // Firebase setup
 //
-let config = {
-  apiKey: "AIzaSyDLLSY5OJPV4D8tvpG6VpbCyNjWDMh877A",
-  authDomain: "qrc-ninja-1.firebaseapp.com",
-  databaseURL: "https://qrc-ninja-1.firebaseio.com",
-  projectId: "qrc-ninja-1",
-  storageBucket: "qrc-ninja-1.appspot.com",
-  messagingSenderId: "1013322006315"
-};
+// let config = {
+//   apiKey: "AIzaSyDLLSY5OJPV4D8tvpG6VpbCyNjWDMh877A",
+//   authDomain: "qrc-ninja-1.firebaseapp.com",
+//   databaseURL: "https://qrc-ninja-1.firebaseio.com",
+//   projectId: "qrc-ninja-1",
+//   storageBucket: "qrc-ninja-1.appspot.com",
+//   messagingSenderId: "1013322006315"
+// };
 
-const app = firebase.initializeApp(config);
+// const app = firebase.initializeApp(config);
 
 function abortOperation( functionName, failureString ) {
 
@@ -340,48 +340,48 @@ function locationIsValid( location ){
    ;
 }
 
-function searchForLinkFirebase(keyString) {
+// function searchForLinkFirebase(keyString) {
 
-  try {
+//   try {
 
-    decodedQRCString = keyString;
-    //
-    // Note - URLS are not allowed as short names right now because firebase has a problem with encoded strings as search keys
-    // If this is ever fixed, we will revisit using URLs as short strings
-    //
-    // Why would you want to use a URL as a short string? So that a page can be opened directly without going through adverts
-    //
-    firebase.firestore().collection('keys').where('shortName', '==', keyString)  
-      .get().then( (querySnapshot) => {
-        if (!!querySnapshot) {
-          if (querySnapshot.docs.length == 0) {
-            getTargetLink(JSON.stringify([{ status: status_targetNotFound }]));
-          } else if (querySnapshot.docs.length > 1) {
-            getTargetLink(JSON.stringify([{ status: status_tooManyTargetsFound }]));
-          } else {
-            querySnapshot.forEach((doc) => {
-              decodedQRCString = decodeURIComponent(doc.data().urlString);
-              var data = [{
-                status: status_operationSuccessful,
-                urlString: decodedQRCString,
-                openNewTab: doc.data().openNewTab
-              }];
-              getTargetLink(JSON.stringify(data));
-            });
-          }
-        } 
-      }).catch( e => {
-        notifyFailure(msg_Unexpected_Failure_Translating_QRCode, key_LabelShortCodeError );
-      });
+//     decodedQRCString = keyString;
+//     //
+//     // Note - URLS are not allowed as short names right now because firebase has a problem with encoded strings as search keys
+//     // If this is ever fixed, we will revisit using URLs as short strings
+//     //
+//     // Why would you want to use a URL as a short string? So that a page can be opened directly without going through adverts
+//     //
+//     firebase.firestore().collection('keys').where('shortName', '==', keyString)  
+//       .get().then( (querySnapshot) => {
+//         if (!!querySnapshot) {
+//           if (querySnapshot.docs.length == 0) {
+//             getTargetLink(JSON.stringify([{ status: status_targetNotFound }]));
+//           } else if (querySnapshot.docs.length > 1) {
+//             getTargetLink(JSON.stringify([{ status: status_tooManyTargetsFound }]));
+//           } else {
+//             querySnapshot.forEach((doc) => {
+//               decodedQRCString = decodeURIComponent(doc.data().urlString);
+//               var data = [{
+//                 status: status_operationSuccessful,
+//                 urlString: decodedQRCString,
+//                 openNewTab: doc.data().openNewTab
+//               }];
+//               getTargetLink(JSON.stringify(data));
+//             });
+//           }
+//         } 
+//       }).catch( e => {
+//         notifyFailure(msg_Unexpected_Failure_Translating_QRCode, key_LabelShortCodeError );
+//       });
 
-  } catch {
+//   } catch {
 
-    abortOperation("searchForLinkFirebase", msg_Internal_Failure + code_12);
+//     abortOperation("searchForLinkFirebase", msg_Internal_Failure + code_12);
 
-  }
+//   }
 
 
-}
+// }
 
 // function searchForLinkFirebaseV2( keyString ) {
 
